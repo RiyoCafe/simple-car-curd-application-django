@@ -35,10 +35,10 @@ I have taken help from [PythonHacks](https://github.com/RekhuGopal/PythonHacks/t
 
 ### API Endpoints:
 
-- **Create**: `POST /api/cars/`
+- **Create**: `POST /api/cars/add/`
 - **Read**: `GET /api/cars/` (Retrieve all resources)
-- **Read**: `GET /api/cars/?id={}/` (Retrieve a specific resource)
-- **Update**: `PATCH /api/cars/?id={}/` (Update a resource)
-- **Delete**: `DELETE /api/cars/?id={}/` (Delete a resource)
+- **Read**: `GET /api/cars/{id}/` (Retrieve a specific resource)
+- **Update**: `PATCH /api/cars/update/{id}//` (Update a resource)
+- **Delete**: `DELETE /api/cars/delete/{id}/` (Delete a resource)
 
 
