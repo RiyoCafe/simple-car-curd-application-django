@@ -2,7 +2,7 @@
 ## CRUD Application with Django and PostgreSQL
 
 This repository contains a simple CRUD (Create, Read, Update, Delete) application built using Python Django framework, with PostgreSQL as the database backend. The application provides endpoints that can be accessed via HTTP requests, demonstrated using Postman.
-I have taken help from [PythonHacks](https://github.com/RekhuGopal/PythonHacks/tree/main/Django_REST_API) and [CURD app build](https://betterstack.com/community/guides/scaling-python/django-postgresql/)repository for developing this project.
+I have taken help from [PythonHacks](https://github.com/RekhuGopal/PythonHacks/tree/main/Django_REST_API) and [CURD app build](https://betterstack.com/community/guides/scaling-python/django-postgresql/) repository for developing this project.
 ### Features:
 
 - CRUD functionality implemented for managing data.
