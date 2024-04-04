@@ -1,43 +1,71 @@
-from django.shortcuts import render
-from rest_framework import viewsets
-from django.shortcuts import get_object_or_404
-from . import models
-from . import serializers
-from rest_framework.views import APIView
+from django.shortcuts import render, redirect
+from .models import Cars
+from .serializers import CarsSerializer
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework import status
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+import json
 
-# Adding APIView to rewrite http methods
-class CarsViewset(APIView):
-    def get(self, request, id=None):
-        if id:
-            item = models.Cars.objects.get(id=id)
-            serializer = serializers.CarsSerializer(item)
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+def list_cars(request):
+    items = Cars.objects.all()
+    serializer = CarsSerializer(items, many=True)
+    data = {
+        "status": "success",
+        "data": serializer.data
+    }
+    return JsonResponse(data, status=200)
 
-        items = models.Cars.objects.all()
-        serializer = serializers.CarsSerializer(items, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+def get_car_by_id(request, id):
+    try:
+        item = Cars.objects.get(id=id)
+    except Cars.DoesNotExist:
+        return JsonResponse({"status": "error", "data": "Car not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = CarsSerializer(item)
+    data = {
+        "status": "success",
+        "data": serializer.data
+    }
+    return JsonResponse(data, status=200)
 
-    def post(self, request):
-        serializer = serializers.CarsSerializer(data=request.data)
+@csrf_exempt
+def add_car(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print(data)
+        serializer = CarsSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return redirect('list_cars')
+            # return JsonResponse({"status": "success", "data": serializer.data}, status=200)
+        return JsonResponse({"status": "error", "data": serializer.errors}, status=400)
+    
 
-    def patch(self, request, id=None):
-        item = models.Cars.objects.get(id=id)
-        serializer = serializers.CarsSerializer(item, data=request.data, partial=True)
+# define update_car function using patch method
+@csrf_exempt
+def update_car(request, id):
+    try:
+        item = Cars.objects.get(id=id)
+    except Cars.DoesNotExist:
+        return JsonResponse({"status": "error", "data": "Car not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'PATCH':
+        data = json.loads(request.body)
+        serializer = CarsSerializer(item, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id=None):
-        item = models.Cars.objects.filter(id=id)
-        print(item)
-        item.delete()
-        return Response({"status": "success", "data": "Item Deleted"})
+            return redirect('list_cars')
+            # return JsonResponse({"status": "success", "data": serializer.data}, status=200)
+        return JsonResponse({"status": "error", "data": serializer.errors}, status=400)
+@csrf_exempt
+def delete_car(request, id):
+    try:
+        item = Cars.objects.get(id=id)
+    except Cars.DoesNotExist:
+        return JsonResponse({"status": "error", "data": "Car not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    item.delete()
+    return redirect('list_cars')
+    #return JsonResponse({"status": "success", "data": "Car deleted successfully"}, status=200)
